@@ -12,6 +12,6 @@ class Post extends Model
     // 1つの投稿は1人のユーザーに属する
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
