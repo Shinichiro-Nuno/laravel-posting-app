@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>投稿詳細</title>
+    <title>投稿編集</title>
 
     {{-- Bootstrap --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
@@ -14,8 +14,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet">
 
-
-    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet" >
 </head>
 
 <body>
@@ -26,9 +25,9 @@
                     <a href="{{ route('posts.index') }}" class="navbar-brand">投稿アプリ</a>
 
                     <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a href="{{ route('logout') }}" class="nav-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">ログアウト</a>
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST">
+                        <li class="navbar-nav">
+                            <a href="{{ route('logout') }}" class="nav-link" onclick="event.prevenDefault(); document.getElementById('logout-form'),submit();">ログアウト</a>
+                            <form action="logout-form" action="{{ route('logout') }}" method="POST">
                                 @csrf
                             </form>
                         </li>
@@ -39,36 +38,35 @@
 
         <main>
             <div class="container">
-                <h1 class="fs-2 my-3">投稿詳細</h1>
+                <h1 class="fs-2 my-3">投稿編集</h1>
 
-                @if (session('flash_message'))
-                    <p class="text-success">{{ session('flash_message') }}</p>
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                 @endif
 
                 <div class="mb-2">
                     <a href="{{ route('posts.index') }}" class="text-decoration-none">&lt; 戻る</a>
                 </div>
 
-                <article>
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h2 class="card-title fs-5">{{ $post->title }}</h2>
-                            <p class="card-text">{{ $post->content }}</p>
-
-                            @if ($post->user_id === Auth::id())
-                                <div class="d-flex">
-                                    <a href="{{ route('posts.edit', $post) }}" class="btn btn-outline-primary d-block me-1">編集</a>
-
-                                    <form action="{{ route('posts.destroy', $post) }}" method="POST" onsubmit="return confirm('本当に削除してもよろしいですか？');" >
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger">削除</button>
-                                    </form>
-                                </div>
-                            @endif
-                        </div>
+                <form action="{{ route('posts.update', $post) }}" method="POST">
+                    @csrf
+                    @method('PATCH')
+                    <div class="form-group mb-3">
+                        <label for="title">タイトル</label>
+                        <input type="text" class="form-control" id="title" name="title" value="{{ old('title', $post->title) }}">
                     </div>
-                </article>
+                    <div class="form-group mb-3">
+                        <label for="content">本文</label>
+                        <textarea class="form-control" id="content" name="content">{{ old('content', $post->content) }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary">更新</button>
+                </form>
             </div>
         </main>
 
